@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8">
@@ -12,4 +12,58 @@
     <div id="app"></div>
     
   </body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOEIC Flashcards</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-center p-5">
+    <h1 class="text-3xl font-bold mb-5">TOEIC Flashcards</h1>
+    <div class="grid grid-cols-4 gap-4 max-w-5xl mx-auto" id="flashcards"></div>
+    <button onclick="nextCards()" class="mt-5 px-6 py-2 bg-blue-500 text-white rounded-lg shadow-lg hover:bg-blue-700">Next</button>
+    
+    <script>
+        const apiUrl = "https://script.google.com/macros/s/AKfycbwzQkK4TCVMkGgacZYzZy49RIe97E0i4sVZQCFAvAYdCZEEs4s6HJfUVXusKHM5WWpD/exec";
+        let words = [];
+        let index = 0;
+        
+        async function fetchWords() {
+            try {
+                const response = await fetch(apiUrl);
+                words = await response.json();
+                renderCards();
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        }
+        
+        function renderCards() {
+            const container = document.getElementById('flashcards');
+            container.innerHTML = '';
+            for (let i = 0; i < 20 && i < words.length; i++) {
+                let wordIndex = (index + i) % words.length;
+                let card = document.createElement('div');
+                card.className = 'bg-white p-5 rounded-lg shadow-lg text-xl font-semibold cursor-pointer flex justify-center items-center h-32';
+                card.innerHTML = `<span class='front'>${words[wordIndex].english}</span><span class='back hidden text-gray-700'>${words[wordIndex].thai}</span>`;
+                card.onclick = function () {
+                    this.querySelector('.front').classList.toggle('hidden');
+                    this.querySelector('.back').classList.toggle('hidden');
+                };
+                container.appendChild(card);
+            }
+        }
+        
+        function nextCards() {
+            index = (index + 20) % words.length;
+            renderCards();
+        }
+        
+        fetchWords();
+    </script>
+</body>
 </html>
